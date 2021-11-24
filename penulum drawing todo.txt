@@ -1,0 +1,14 @@
+PROJECT TODO:
+- CAD enclosure for both motors + solenoid
+- figure out how to elongate cables for motor 2 + solenoid
+- test print gears
+- make the main holder rod out of something threaded so I can put a nut on the bottom to hold up the bearing (bonus: adjustable!)
+- so much god damn coding
+    - motor control
+    - 2d image conversion to gcode
+- limits or limit switches or something for calibration
+- h bridge or better motor controllers to enable changing direction
+42.525
+- mounting second arm motor (atm will definitely do all sorts of rubbing against the first arm)
+- RelatedP: countersink the key in the pinion to give more clearance from the arm
+- measure bolts to see how much they can be countersunk
