@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "sketch": "motorCode\\motorCode.ino",
+    "port": "COM4"
+}
