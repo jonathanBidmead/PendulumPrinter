@@ -8,14 +8,15 @@ float delayTime = 100;
 int duration;//the number of the pulses
 boolean Direction;//the rotation direction
 
-float refPos = 3;
-float KP = 10;
-float KI = 1;
+float refPos = 2;
+float KP = 60;
+float KI = 20;
+
 float error = 0;
 float errorSum = 0;
 float ctrl = 0;
 float minPower = 0;
-float epsilon = 0.02;
+float epsilon = 0.05;
 void setup()
 {
   Serial.begin(57600);//Initialize the serial port
@@ -32,20 +33,21 @@ void setup()
 void loop()
 {
   //generating fluctuating reference
-//  refPos = 8 + 5*sin(0.0001*(millis()-2100));
+//  refPos = 1 + 1*sin(0.0003*(millis()-2100));
   if (abs(error) < epsilon){
-    refPos = 3-refPos;
+    refPos = 2-refPos;
+    errorSum = 0;
   }
 //  refPos = 3;
   vel = duration;
   pos += duration;
   error = refPos - pos/(341.2*2);
-  errorSum += error;
+//  errorSum += error;
 
   //saturating integral action (only increase if below threshold)
-//  if (abs(KI*errorSum) < 40){
-//    errorSum += error;
-//  }
+  if (abs(error) < 1 && abs(KI*errorSum) < 50){
+    errorSum += error;
+  }
 
   //calculate control
   ctrl = KP*error + KI*errorSum;
@@ -76,14 +78,14 @@ void loop()
       ctrl = 255;
     }
   }
-//  if (abs(ctrl) < minPower){
-//    if (ctrl < 0){
-//      ctrl = -minPower;
-//    }
-//    else {
-//      ctrl = minPower;
-//    }
-//  }
+  if (abs(ctrl) < minPower){
+    if (ctrl < 0){
+      ctrl = -minPower;
+    }
+    else {
+      ctrl = minPower;
+    }
+  }
 
   //turning off control if setpoint within acceptable limits
 //  if (abs(error) < epsilon){
@@ -91,16 +93,16 @@ void loop()
 //    error = refPos - pos/(341.2*2);
 //  }
   
-  analogWrite(9,ctrl);
+  analogWrite(9,abs(ctrl));
   
-  Serial.print("Position & Velocity:");
+  Serial.print("Position,Reference,Control,Velocity:");
   Serial.print(pos/(341.2*2));
   Serial.print(",");
-  Serial.print(refPos);
-  Serial.print(",");
-  Serial.print(ctrl/20);
-  Serial.print(",");
-  Serial.println(vel/(341.2*2*(delayTime/1000)));
+  Serial.println(refPos);
+//  Serial.print(",");
+//  Serial.println(ctrl);
+//  Serial.print(",");
+//  Serial.println(vel/(341.2*2*(delayTime/1000)));
 
 //  Serial.print("Control: ");
 //  Serial.println(ctrl);
