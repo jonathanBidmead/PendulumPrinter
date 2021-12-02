@@ -1,0 +1,20 @@
+what do I need the arduino code to do?
+
+- I give it a timeseries of xy co ords and it goes to those points
+- I tell it when to raise and lower the pen
+
+- 2 PI(D) loops, one for each motor
+- I'd prefer not to have to delve too deep into interrupts so try to make things non-blocking
+
+- I should really get some limit switches but for now I guess it's fine
+
+STATES
+
+- Initialise: Zero Calibration
+    - User is able to nudge the arms to the zero position using the serial monitor
+    - Pen is raised immediately
+
+- Operation:
+    - Dynamic reference begins as soon as the start button is pressed
+    - Need to take care that the arms move in tandem correctly. Actually I don't care about that issue from 322 because the pen would be raised for that
+    - Define a function for flipping motor direction
