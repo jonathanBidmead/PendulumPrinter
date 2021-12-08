@@ -35,17 +35,15 @@ while(newCondition)
     startCol = blackPixels(1,2);
     condition = true;
     j = 2;
-    start = 2;
+    start = 1;
     adj = [startRow,startCol];
     count = 0;
     
     
     
     while(condition)
-        adj = sortrows(adj);
         for a = 1:length(adj)
-            start = length(adj);
-            progress = 100*length(adj)/length(blackPixels)
+            start = 100*length(adj)/length(blackPixels)
             startRow = adj(a,1);
             startCol = adj(a,2);
             for i = 1:length(blackPixels)%gets pixels adjacent to startPx

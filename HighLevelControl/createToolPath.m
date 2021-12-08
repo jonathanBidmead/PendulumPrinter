@@ -1,18 +1,18 @@
 %run interpretingImage from this script
-interpretingImage;
+% interpretingImage;
 
 %sort lines output from interpretingImage so that all adjacent pixels are
 %next to each other
-for i = 1:2:size(lines,2)
-    sortedLine(1:size(nonzeros(lines(:,i)),1),i:i+1) = lineSort(lines(:,i:i+1));
-end
+% for i = 1:2:size(lines,2)
+%     sortedLine(1:size(nonzeros(lines(:,i)),1),i:i+1) = lineSort(lines(:,i:i+1));
+% end
 
 %use lines output from interpretingImage as input to Kinematics to create a
 %toolpath for the robot
 
 %scale output of interpretingImage from pixels to mm
 %conversion factor 2.93
-lines_mm = sortedLine./2.93;
+lines_mm = lines./2.93;
 
 lineNum = 1;
 
@@ -48,9 +48,12 @@ p2 = [p1(1,:) + r2.*cos(theta1 + theta2)'; p1(2,:) + r2.*sin(theta1 + theta2)'];
 
 h = animatedline('MaximumNumPoints',3);
 
+border = [1 1;1 210;297 210;297 1;1 1];
+
 hold on
 set(gca, 'YDir','reverse')
-axis ([-20 520 -20 530])
+axis ([-20 300 -20 300])
+plot(border(:,1),border(:,2),'-')
 plot(refX+baseX, refY+baseY,'.')
 for i = 1:t
     x = [p0(1,i) p1(1,i) p2(1,i)];

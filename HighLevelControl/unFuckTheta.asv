@@ -1,9 +1,0 @@
-epsilon = 0.5;
-theta1_new = zeros(length(theta1),1);
-
-for i = 1:length(theta1)-1
-    theta1_new(i) = theta1(i);
-    if (abs(theta1(i+1) - theta1(i)) > epsilon)
-        theta1_new(i+1) = theta1(i+1) + pi;
-    end
-end
