@@ -17,7 +17,7 @@ end
 %getting all lines in image
 startRow = blackPixels(1,1);
 startCol = blackPixels(1,2);
-adj = [startRow,startCol];
+adj = [-1,-1];
 newCondition = true;
 m = 1;
 % lines = zeros(length(blackPixels),100);
@@ -25,7 +25,7 @@ while(newCondition)
 
     blackPixels = setdiff(blackPixels,adj,'rows');
     
-    if length(blackPixels) < 10
+    if length(blackPixels) < 1
         break
     end
     
@@ -34,20 +34,20 @@ while(newCondition)
     startRow = blackPixels(1,1);
     startCol = blackPixels(1,2);
     condition = true;
-    j = 1;
-    start = 1;
+    j = 2;
+    start = 2;
     adj = [startRow,startCol];
     count = 0;
     
     
     
     while(condition)
-        for a = 1:length(adj)
+        for a = start-1:length(adj)
             start = length(adj)
             startRow = adj(a,1);
             startCol = adj(a,2);
             for i = 1:length(blackPixels)%gets pixels adjacent to startPx
-                if (abs(startRow - blackPixels(i,1)) < 5) && (abs(startCol - blackPixels(i,2)) < 5)%if abs diff between given pixel and a black pixel is < 2, (i.e. they're adjacent
+                if (abs(startRow - blackPixels(i,1)) < 3) && (abs(startCol - blackPixels(i,2)) < 3)%if abs diff between given pixel and a black pixel is < 2, (i.e. they're adjacent
 
                     if ~ismember([blackPixels(i,1),blackPixels(i,2)],adj,'rows')%check whether the point is already in the adjacent list
                         adj(j,1) = blackPixels(i,1);

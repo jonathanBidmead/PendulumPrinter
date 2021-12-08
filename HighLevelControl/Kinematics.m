@@ -1,31 +1,51 @@
-r1 = 1;
-r2 = 1;
-t = 100;
-refX = linspace(0.1,1,t);
-refY = linspace(0.1,1,t);
+function thetaRef = Kinematics(cartPath)
 
-refX = linspace(0,1.5,t);
-refY = 1.*sin(2.*refX);
+r1 = 160;
+r2 = 180;
+t = length(cartPath);
+epsilon = 1;
+
+% refX = linspace(0.1,1,t);
+% refY = linspace(0.1,1,t);
+% 
+% refX = linspace(0,1.5,t);
+% refY = 1.*sin(2.*refX);
+
+refX = cartPath(:,1);
+refY = cartPath(:,2);
+
 
 theta2 = acos((refX.^2 + refY.^2 - r1^2 - r2^2)/(2*r1*r2));
 theta1 = atan(refY./refX) - atan((r2.*sin(theta2))./(r1+r2.*cos(theta2)));
 
+%accounting for things looping around
+% for i = 1:length(theta1)
+%     if (atan(refY(i)/refX(i)) > 1)
+%         theta1(i:end) = theta1(i:end) - pi;
+%         
+%     end
+%     
+% end
 
-p0 = [zeros(1,t); zeros(1,t)];
-p1 = [r1.*cos(theta1); r1.*sin(theta1)];
-p2 = [p1(1,:) + r2.*cos(theta1 + theta2); p1(2,:) + r2.*sin(theta1 + theta2)];
+%0.371718 and -2.76628
 
-h = animatedline('MaximumNumPoints',3);
+% for i = 1:length(theta2)
+%     if (theta2(i) > 0)
+%         theta2(i) = theta2(i) - pi;
+%     end
+%     
+% end
 
-hold on
-axis([-2 2 -2 2]);
-plot(refX,refY)
-for i = 1:t
-    x = [p0(1,i) p1(1,i) p2(1,i)];
-    y = [p0(2,i) p1(2,i) p2(2,i)];
-    
-    addpoints(h,x,y);
-    pause(0.01);
-    drawnow
+tiledlayout(2,1);
+nexttile;
+plot(atan(refY./refX));
+nexttile;
+plot(atan((r2.*sin(theta2))./(r1+r2.*cos(theta2))));
+
+
+thetaRef(:,1) = theta1;
+thetaRef(:,2) = theta2;
+
+
 end
 
