@@ -1,0 +1,1 @@
+motorData = load('motorData.txt');

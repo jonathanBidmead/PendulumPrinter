@@ -9,23 +9,35 @@ float vel = 0;
 float delayTime = 10;
 int duration;//the number of the pulses
 boolean Direction;//the rotation direction
+float gearRatio = 2;
 
-float refPos = 0.3;
+//theta2
+
+float refPos = 1;
+float refPosVal = 1;
+int refIter = 0;
 float KP;
 float KI;
+float KD;
+float FC;
+float RS;
+float PO;
+float controlVel;
 
-
-
+float lastError = 0;
 float error = 0;
 float errorSum = 0;
 float ctrl = 0;
-float minPower = 100;
-float epsilon = 0.05;
-float maxPower = 200;
+float minPower = 0;
+float epsilon = 0.01;
+float maxPower = 255;
+float lastPos = 0;
+
 
 float startTime = 0;
 float currentTime = 0;
 int stepTime = 4000;
+float lastRefPos;
 
 void setup()
 {
@@ -39,53 +51,75 @@ void setup()
   digitalWrite(13,HIGH);
   
   //good for 0.3 sqaure
-  //KP = 120;
-  //KI = 1;
+  KP = 300;
+  KI = 20;
+  KD = 20;
 
-  KP = 400;
-  KI = 3;
+//  KP = 400;
+//  KI = 3;
+
+  RS = 20;
+  PO = -5.5;
+
   
   
-  
-  delay(2000);
+  delay(200);
   startTime = millis();
 }
 
 void loop()
 {
+
+  lastRefPos = refPos;
   //generating fluctuating references
   //sinusoidal reference
-  refPos = 0.3*sin(0.0005*(millis()-2100));
+  refPos = 1*sin(0.002*(millis()-210));
 
   //square wave reference
 //  currentTime = millis();
 //  if ((currentTime - startTime) > stepTime){
-//    if (refPos == 0.3){
-//      refPos = -0.3;
+//    if (refPos == refPosVal){
+//      refPos = -refPosVal;
 //    }
-//    else if (refPos == -0.3){
-//      refPos = 0.3;
+//    else if (refPos == -refPosVal){
+//      refPos = refPosVal;
 //    }
-//    stepTime += 4000;
+////    stepTime += 4000;
+//    startTime = millis();
 //    errorSum = 0;
 //  }
 
+  //reference imported from matlab
+//  refPos = refPosList[refIter];
+//  refIter++;
+
+
+  controlVel = (refPos-lastRefPos)/delayTime;
 
 
   //calculating variables
   vel = duration;
+  vel = vel/(341.2*gearRatio*(delayTime/1000));//conversion to real units
   pos += duration;
   duration = 0;
-  error = refPos - pos/(341.2*2);
+  lastError = error;
+  error = refPos - pos/(341.2*gearRatio);
   errorSum += error;
 
-//  //limiting effect of integral action
-//  if (abs(error) > 0.05){
-//    errorSum -= error;
-//  }
+  //friction compensation, very large value for low speed but drops off exponentially once the motor starts moving | RS = Response Steepness | PO = Power Offset
+  if (abs(refPos - lastRefPos) > epsilon){
+    FC = exp(-(RS*abs(vel) + PO));
+  } else {
+    FC = 0;
+  }
+
+  if (abs(KI*errorSum) > 80){
+    errorSum -= error;
+  }
 
   //calculate control
-  ctrl = KP*error + KI*errorSum;
+  FC = 0;
+  ctrl = KP*error + KI*errorSum + KD*(error-lastError)/(delayTime/1000) + FC;
   
   //changing direction and applying deadzone offset
   if(ctrl < 0){
@@ -115,17 +149,17 @@ void loop()
 //  analogWrite(9,100*sin(0.0005*(millis()-2100)));
   
   Serial.print("Position,Reference,Control,Velocity:");
-  Serial.print(100*pos/(341.2*2) -300);
+  Serial.print(100*pos/(341.2*gearRatio) -300);
   Serial.print(",");
-  Serial.print(100*refPos -300);
-  Serial.print(",");
-  Serial.print(minPower);
-  Serial.print(",");
-  Serial.print(-minPower);
-  Serial.print(",");
-  Serial.println(ctrl);
+  Serial.println(100*refPos -300);
 //  Serial.print(",");
-//  Serial.println(vel/(341.2*2*(delayTime/1000)));
+//  Serial.print(vel*100);
+//  Serial.print(",");
+//  Serial.print(error);
+//  Serial.print(",");
+//  Serial.println(ctrl+300);
+//  Serial.print(",");
+//  Serial.println(vel/(341.2*GearRatio*(delayTime/1000)));
 
 //  Serial.print("Control: ");
 //  Serial.println(ctrl);
